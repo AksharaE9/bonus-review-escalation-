@@ -30,6 +30,17 @@ export async function middleware(request: NextRequest) {
     return response;
   };
 
+  // Rule 0: Bypass static assets, Next.js internal chunks, favicons, and public API routes
+  if (
+    pathname.startsWith("/_next") ||
+    pathname.startsWith("/api/auth") ||
+    pathname.startsWith("/api/health") ||
+    pathname.startsWith("/favicon") ||
+    pathname.includes(".")
+  ) {
+    return NextResponse.next();
+  }
+
   // Rule 1: Allow public root landing page through
   if (pathname === "/") {
     return createNextResponse(false);
@@ -87,6 +98,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!api/auth|api/health|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|css|js)$).*)",
+    "/((?!_next/static|_next/image|favicon.ico|api/auth|api/health|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|css|js|map|json|woff|woff2|ttf|eot)$).*)",
   ],
 };
