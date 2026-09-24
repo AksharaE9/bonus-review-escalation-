@@ -10,6 +10,17 @@ import type { Role, BonusType, EscalationCategory, EscalationSeverity, Escalatio
 dotenv.config();
 neonConfig.webSocketConstructor = ws;
 
+// ─── Production guard ────────────────────────────────────────────────────────
+// The seed script installs demo data. It must NEVER run against a production
+// database unless the operator explicitly sets ALLOW_DEMO_SEED=true.
+if (process.env.NODE_ENV === "production" && process.env.ALLOW_DEMO_SEED !== "true") {
+  console.error("❌ SEED BLOCKED: NODE_ENV=production and ALLOW_DEMO_SEED is not 'true'.");
+  console.error("   The demo seed script must not run against a production database.");
+  console.error("   To bootstrap a first admin, use: npm run db:bootstrap-admin");
+  process.exit(1);
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
 async function seed() {
   const url = process.env.DATABASE_URL || process.env.DIRECT_URL;
   if (!url || url.trim() === "") {
@@ -18,6 +29,7 @@ async function seed() {
   }
 
   console.log("🌱 Initializing Pulse Expanded Seed Engine (Realistic Dataset)...");
+
   const pool = new Pool({ connectionString: url });
   const db = drizzle(pool, { schema });
 

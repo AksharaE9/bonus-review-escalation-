@@ -4,13 +4,13 @@
 
 ---
 
-## 1. Locked Tech Stack
+## 1. Tech Stack
 
 - **Framework:** Next.js 15 (App Router, Server Components & Server Actions, React 19)
 - **Styling:** Tailwind CSS v4, custom design tokens in `globals.css` (Inter font, tabular numerals, hairline borders)
 - **Component Primitives:** shadcn/ui (Radix UI)
 - **Icons:** `lucide-react`
-- **Charts:** `recharts` (12-month bonus spend bar chart & 12-week escalation resolution velocity)
+- **Charts:** `recharts` (bonus spend bar chart & escalation resolution velocity)
 - **Database:** Neon Serverless PostgreSQL
 - **ORM & Migrations:** Drizzle ORM (`drizzle-kit` versioned migrations) + `@neondatabase/serverless`
 - **Authentication & RBAC:** Auth.js v5 (NextAuth Credentials Provider + JWT Session + Server-side RBAC scoping)
@@ -28,29 +28,27 @@
 - Neon PostgreSQL connection string (or compatible PostgreSQL 15+ database)
 
 ### 2.2 Environment Setup
-Copy `.env.example` to `.env` and provide your database credentials:
+Copy `.env.example` to `.env` and fill in your own values:
 
 ```bash
 cp .env.example .env
 ```
 
-```env
-DATABASE_URL=postgresql://user:password@ep-sample-pooler.us-east-2.aws.neon.tech/pulse?sslmode=require
-DIRECT_URL=postgresql://user:password@ep-sample.us-east-2.aws.neon.tech/pulse?sslmode=require
-AUTH_SECRET=f47a68e7d23d8c1e847cbb6509f6b92a4872951dcbe8f451a9a81e9f1a2b3c4d
-AUTH_URL=http://localhost:3000
-NEXT_PUBLIC_APP_NAME=Pulse
-NODE_ENV=development
+Edit `.env` and provide your database connection strings, a randomly generated `AUTH_SECRET`, and the `AUTH_URL` for your deployment origin. Refer to `.env.example` for all required variable names. **Never commit `.env` or any file containing real credentials.**
+
+Generate `AUTH_SECRET`:
+```bash
+openssl rand -base64 32
 ```
 
-### 2.3 Run Migrations & Seed Data
-Initialize the database schema and load the realistic seed dataset:
+### 2.3 Run Migrations & Bootstrap
 
 ```bash
-# 1. Apply versioned migrations
+# 1. Apply versioned schema migrations
 npm run db:migrate
 
-# 2. Populate idempotent demo dataset
+# 2. Bootstrap initial admin account (uses BOOTSTRAP_ADMIN_EMAIL + BOOTSTRAP_ADMIN_PASSWORD env vars)
+# OR run the seed for a development dataset (refuses to run in production without ALLOW_DEMO_SEED=true)
 npm run db:seed
 ```
 
@@ -62,15 +60,11 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ---
 
-## 3. Demo Credentials
+## 3. Account Provisioning
 
-Seed accounts generated for testing all three roles:
+Accounts are **admin-created only** — there is no public self-registration. The initial admin account is bootstrapped via `scripts/bootstrap-admin.ts` using environment variables, or via the seed script in development.
 
-| Role | Email | Password | Access Scope |
-|---|---|---|---|
-| **ADMIN** | `admin@pulse.local` | `Admin@12345` | Global oversight, bonus approvals, audit ledger, user provisioning, system settings |
-| **LEAD** | `lead@pulse.local` | `Lead@12345` | Department team scope, author reviews, award bonuses, resolve team escalations |
-| **USER** | `user@pulse.local` | `User@12345` | Private self-scope, review acknowledgement, raise confidential workplace complaints |
+Once an admin is created, all subsequent accounts (team leads, employees) are provisioned through the Admin → Settings → Users panel.
 
 ---
 
@@ -111,6 +105,9 @@ npm run test
 # Run TypeScript typecheck
 npx tsc --noEmit
 
-# Run production build
+# Run linter
+npm run lint
+
+# Run production build (verify CSS and JS emit)
 npm run build
 ```
