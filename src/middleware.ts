@@ -46,11 +46,36 @@ export async function middleware(request: NextRequest) {
     return createNextResponse(false);
   }
 
-  // Inspect JWT session token
-  const token = await getToken({
+  // Inspect JWT session token (supporting both standard and __Secure- cookie variants on HTTPS)
+  const isSecure =
+    request.url.startsWith("https://") ||
+    request.headers.get("x-forwarded-proto") === "https" ||
+    process.env.NODE_ENV === "production";
+
+  let token = await getToken({
     req: request,
     secret: process.env.AUTH_SECRET,
+    secureCookie: isSecure,
   });
+
+  if (!token) {
+    token = await getToken({
+      req: request,
+      secret: process.env.AUTH_SECRET,
+      cookieName: isSecure
+        ? "__Secure-authjs.session-token"
+        : "authjs.session-token",
+      secureCookie: isSecure,
+    });
+  }
+
+  if (!token) {
+    token = await getToken({
+      req: request,
+      secret: process.env.AUTH_SECRET,
+      secureCookie: false,
+    });
+  }
 
   const isAuthenticated = Boolean(token);
 

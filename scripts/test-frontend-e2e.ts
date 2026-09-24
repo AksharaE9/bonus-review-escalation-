@@ -18,7 +18,7 @@ interface RequestContext {
   cookies: Map<string, string>;
 }
 
-const BASE_URL = process.env.TEST_BASE_URL || "http://localhost:3000";
+const BASE_URL = (process.env.TEST_BASE_URL || "http://localhost:3000").trim().replace(/\/$/, "");
 
 function parseCookies(setCookieHeaders: string[] | null, ctx: RequestContext) {
   if (!setCookieHeaders) return;
