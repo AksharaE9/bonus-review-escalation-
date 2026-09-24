@@ -157,7 +157,11 @@ async function runAudit() {
   
   // Verify /dashboard redirects ADMIN to /admin
   const adminDashRes = await request("/dashboard", {}, adminCtx);
-  assert("ADMIN: GET /dashboard redirects to /admin (307)", adminDashRes.status === 307 && adminDashRes.headers.get("location")?.includes("/admin"), `Location: ${adminDashRes.headers.get("location")}`);
+  assert(
+    "ADMIN: GET /dashboard redirects to /admin (307)",
+    adminDashRes.status === 307 && Boolean(adminDashRes.headers.get("location")?.includes("/admin")),
+    `Location: ${adminDashRes.headers.get("location")}`
+  );
 
   // Verify /admin
   const adminHomeRes = await request("/admin", {}, adminCtx);
@@ -190,7 +194,11 @@ async function runAudit() {
 
   // Verify /dashboard redirects LEAD to /team
   const leadDashRes = await request("/dashboard", {}, leadCtx);
-  assert("LEAD: GET /dashboard redirects to /team (307)", leadDashRes.status === 307 && leadDashRes.headers.get("location")?.includes("/team"), `Location: ${leadDashRes.headers.get("location")}`);
+  assert(
+    "LEAD: GET /dashboard redirects to /team (307)",
+    leadDashRes.status === 307 && Boolean(leadDashRes.headers.get("location")?.includes("/team")),
+    `Location: ${leadDashRes.headers.get("location")}`
+  );
 
   // Verify /team
   const leadTeamRes = await request("/team", {}, leadCtx);
@@ -216,7 +224,11 @@ async function runAudit() {
 
   // Verify /dashboard redirects USER to /me
   const userDashRes = await request("/dashboard", {}, userCtx);
-  assert("USER: GET /dashboard redirects to /me (307)", userDashRes.status === 307 && userDashRes.headers.get("location")?.includes("/me"), `Location: ${userDashRes.headers.get("location")}`);
+  assert(
+    "USER: GET /dashboard redirects to /me (307)",
+    userDashRes.status === 307 && Boolean(userDashRes.headers.get("location")?.includes("/me")),
+    `Location: ${userDashRes.headers.get("location")}`
+  );
 
   // Verify /me
   const userMeRes = await request("/me", {}, userCtx);
