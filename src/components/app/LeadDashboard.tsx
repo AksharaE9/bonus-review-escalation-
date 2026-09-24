@@ -49,7 +49,7 @@ export function LeadDashboard({ data }: LeadDashboardProps) {
               </Button>
             </Link>
             <Link href="/employees">
-              <Button variant="outline" size="sm" className="text-xs h-8">
+              <Button variant="outline" size="sm" className="text-xs h-8 bg-white hover:bg-slate-50 border-slate-200 text-slate-700">
                 My Team
               </Button>
             </Link>
@@ -83,24 +83,24 @@ export function LeadDashboard({ data }: LeadDashboardProps) {
 
       {/* Pending Actions Panel */}
       {data.pendingActions.length > 0 && (
-        <Card className="border-amber-200 dark:border-amber-900/60 bg-amber-50/30 dark:bg-amber-950/20 shadow-none">
-          <CardHeader className="pb-3 border-b border-amber-100 dark:border-amber-900/40">
-            <CardTitle className="text-xs font-semibold uppercase tracking-wider text-amber-900 dark:text-amber-300 flex items-center gap-2">
+        <Card className="border-amber-200 bg-amber-50/50 shadow-sm">
+          <CardHeader className="pb-3 border-b border-amber-200/60">
+            <CardTitle className="text-xs font-semibold uppercase tracking-wider text-amber-900 flex items-center gap-2">
               <Clock className="w-4 h-4 text-amber-600" />
               Action Required from You
             </CardTitle>
           </CardHeader>
-          <CardContent className="pt-3 divide-y divide-amber-100 dark:divide-amber-900/30">
+          <CardContent className="pt-3 divide-y divide-amber-200/40">
             {data.pendingActions.map((action) => (
               <div key={action.id} className="py-2.5 flex items-center justify-between">
                 <div>
-                  <div className="text-xs font-semibold text-zinc-900 dark:text-zinc-100">
+                  <div className="text-xs font-semibold text-slate-900">
                     {action.title}
                   </div>
-                  <div className="text-[11px] text-zinc-500">{action.subtitle}</div>
+                  <div className="text-[11px] text-slate-500">{action.subtitle}</div>
                 </div>
                 <Link href={action.link}>
-                  <Button size="sm" variant="outline" className="h-7 text-xs gap-1 border-amber-300 hover:bg-amber-100 dark:border-amber-800">
+                  <Button size="sm" variant="outline" className="h-7 text-xs gap-1 border-amber-300 bg-white hover:bg-amber-100 text-amber-900">
                     Resume <ArrowRight className="w-3 h-3" />
                   </Button>
                 </Link>
@@ -111,82 +111,82 @@ export function LeadDashboard({ data }: LeadDashboardProps) {
       )}
 
       {/* Team Roster with Quick Metrics */}
-      <Card className="border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-none">
-        <CardHeader className="pb-3 border-b border-zinc-100 dark:border-zinc-800 flex flex-row items-center justify-between">
+      <Card className="border-slate-200 bg-white shadow-sm">
+        <CardHeader className="pb-3 border-b border-slate-100 flex flex-row items-center justify-between">
           <div>
-            <CardTitle className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
+            <CardTitle className="text-sm font-semibold text-slate-900">
               Department Roster & Overview
             </CardTitle>
-            <CardDescription className="text-xs text-zinc-500 mt-0.5">
+            <CardDescription className="text-xs text-slate-500 mt-0.5">
               Performance ratings, YTD bonuses, and escalation status for direct reports
             </CardDescription>
           </div>
-          <Link href="/employees" className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline">
+          <Link href="/employees" className="text-xs font-medium text-indigo-600 hover:text-indigo-700 hover:underline">
             View directory →
           </Link>
         </CardHeader>
         <CardContent className="p-0">
           <Table>
-            <TableHeader className="bg-zinc-50 dark:bg-zinc-900/50">
-              <TableRow className="border-b border-zinc-200 dark:border-zinc-800">
-                <TableHead className="text-[11px] font-semibold uppercase tracking-wider">
+            <TableHeader className="bg-slate-50">
+              <TableRow className="border-b border-slate-200">
+                <TableHead className="text-[11px] font-semibold uppercase tracking-wider text-slate-600">
                   Employee
                 </TableHead>
-                <TableHead className="text-[11px] font-semibold uppercase tracking-wider">
+                <TableHead className="text-[11px] font-semibold uppercase tracking-wider text-slate-600">
                   Designation
                 </TableHead>
-                <TableHead className="text-[11px] font-semibold uppercase tracking-wider text-right">
+                <TableHead className="text-[11px] font-semibold uppercase tracking-wider text-right text-slate-600">
                   YTD Bonus
                 </TableHead>
-                <TableHead className="text-[11px] font-semibold uppercase tracking-wider text-center">
+                <TableHead className="text-[11px] font-semibold uppercase tracking-wider text-center text-slate-600">
                   Latest Rating
                 </TableHead>
-                <TableHead className="text-[11px] font-semibold uppercase tracking-wider text-center">
+                <TableHead className="text-[11px] font-semibold uppercase tracking-wider text-center text-slate-600">
                   Active Escalations
                 </TableHead>
-                <TableHead className="text-[11px] font-semibold uppercase tracking-wider text-right">
+                <TableHead className="text-[11px] font-semibold uppercase tracking-wider text-right text-slate-600">
                   Actions
                 </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {data.teamRoster.map((member) => (
-                <TableRow key={member.id} className="hover:bg-zinc-50/70 dark:hover:bg-zinc-900/40 border-b border-zinc-100 dark:border-zinc-800">
+                <TableRow key={member.id} className="hover:bg-slate-50/70 border-b border-slate-100">
                   <TableCell>
-                    <div className="font-semibold text-xs text-zinc-900 dark:text-zinc-100">
+                    <div className="font-semibold text-xs text-slate-900">
                       {member.fullName}
                     </div>
-                    <div className="text-[10px] text-zinc-400 font-mono">{member.employeeCode}</div>
+                    <div className="text-[10px] text-slate-400 font-mono">{member.employeeCode}</div>
                   </TableCell>
-                  <TableCell className="text-xs text-zinc-600 dark:text-zinc-300">
+                  <TableCell className="text-xs text-slate-600">
                     {member.designation || "Staff Member"}
                   </TableCell>
-                  <TableCell className="text-xs font-mono font-medium text-right text-zinc-900 dark:text-zinc-100">
+                  <TableCell className="text-xs font-mono font-medium text-right text-slate-900">
                     {formatINR(member.totalBonusYtd)}
                   </TableCell>
                   <TableCell className="text-center">
                     {member.latestRating ? (
-                      <span className="inline-flex items-center gap-1 font-mono text-xs font-semibold px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200">
+                      <span className="inline-flex items-center gap-1 font-mono text-xs font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-800">
                         <Star className="w-3 h-3 text-amber-500 fill-amber-500" />
                         {member.latestRating.toFixed(1)}
                       </span>
                     ) : (
-                      <span className="text-xs text-zinc-400">—</span>
+                      <span className="text-xs text-slate-400">—</span>
                     )}
                   </TableCell>
                   <TableCell className="text-center">
                     {member.openEscalations > 0 ? (
-                      <span className="inline-flex items-center gap-1 text-xs font-semibold text-rose-600 dark:text-rose-400">
+                      <span className="inline-flex items-center gap-1 text-xs font-semibold text-rose-600">
                         <span className="w-2 h-2 rounded-full bg-rose-600" />
                         {member.openEscalations}
                       </span>
                     ) : (
-                      <span className="text-xs text-zinc-400">0</span>
+                      <span className="text-xs text-slate-400">0</span>
                     )}
                   </TableCell>
                   <TableCell className="text-right">
                     <Link href={`/employees/${member.id}`}>
-                      <Button variant="ghost" size="sm" className="h-7 text-xs gap-1">
+                      <Button variant="ghost" size="sm" className="h-7 text-xs gap-1 text-slate-700 hover:text-indigo-600 hover:bg-indigo-50">
                         Profile <ExternalLink className="w-3 h-3" />
                       </Button>
                     </Link>

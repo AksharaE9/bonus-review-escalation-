@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@variant dark (&:where(.dark, .dark *));
+
 @layer base {
   :root {
     --background: #f8fafc;
@@ -12,8 +14,8 @@
     --primary-foreground: #ffffff;
     --secondary: #f1f5f9;
     --secondary-foreground: #0f172a;
-    --muted: #f1f5f9;
-    --muted-foreground: #475569;
+    --muted: #f8fafc;
+    --muted-foreground: #64748b;
     --accent: #f1f5f9;
     --accent-foreground: #0f172a;
     --destructive: #e11d48;
@@ -22,28 +24,6 @@
     --input: #e2e8f0;
     --ring: #4f46e5;
     --radius: 0.5rem;
-  }
-
-  .dark {
-    --background: #09090b;
-    --foreground: #f4f4f5;
-    --card: #121215;
-    --card-foreground: #f4f4f5;
-    --popover: #121215;
-    --popover-foreground: #f4f4f5;
-    --primary: #6366f1;
-    --primary-foreground: #ffffff;
-    --secondary: #1e1e24;
-    --secondary-foreground: #f4f4f5;
-    --muted: #1e1e24;
-    --muted-foreground: #a1a1aa;
-    --accent: #1e1e24;
-    --accent-foreground: #f4f4f5;
-    --destructive: #f43f5e;
-    --destructive-foreground: #ffffff;
-    --border: #27272a;
-    --input: #27272a;
-    --ring: #6366f1;
   }
 }
 
