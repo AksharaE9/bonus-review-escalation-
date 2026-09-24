@@ -23,6 +23,7 @@
     "test:int": "vitest run --project integration",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
+    "test:frontend": "node --import tsx/esm scripts/test-frontend-e2e.ts",
     "audit:all": "vitest run"
   },
   "dependencies": {
