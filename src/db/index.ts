@@ -5,7 +5,9 @@ import { drizzle as drizzleServerless } from "drizzle-orm/neon-serverless";
 import ws from "ws";
 import * as schema from "./schema";
 
-neonConfig.webSocketConstructor = ws;
+if (typeof globalThis.WebSocket === "undefined") {
+  neonConfig.webSocketConstructor = ws;
+}
 
 function getDatabaseUrl(): string {
   const url = process.env.DATABASE_URL;

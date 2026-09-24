@@ -6,11 +6,13 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:vercel": "node --import tsx/esm src/db/migrate.ts && next build",
     "start": "next start",
     "lint": "next lint",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "node --import tsx/esm src/db/migrate.ts",
     "db:seed": "node --import tsx/esm src/db/seed.ts",
+    "db:setup": "node --import tsx/esm src/db/migrate.ts && node --import tsx/esm src/db/seed.ts",
     "db:verify": "node --import tsx/esm scripts/verify-schema.ts",
     "test": "vitest run",
     "test:unit": "vitest run --project unit",
