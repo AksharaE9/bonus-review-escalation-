@@ -132,7 +132,11 @@ export async function updateUserRoleAction(userId: string, newRole: Role) {
     async (tx) => {
       const [updated] = await tx
         .update(users)
-        .set({ role: newRole, updatedAt: new Date() })
+        .set({
+          role: newRole,
+          sessionVersion: sql`${users.sessionVersion} + 1`,
+          updatedAt: new Date(),
+        })
         .where(eq(users.id, userId))
         .returning();
 
@@ -170,6 +174,7 @@ export async function softDeleteUserAction(userId: string) {
         .set({
           deletedAt: new Date(),
           status: "INACTIVE",
+          sessionVersion: sql`${users.sessionVersion} + 1`,
           updatedAt: new Date(),
         })
         .where(eq(users.id, userId))

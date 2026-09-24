@@ -41,8 +41,14 @@ export function Topbar({
   const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
-    const isDarkMode = document.documentElement.classList.contains("dark");
-    setIsDark(isDarkMode);
+    const saved = localStorage.getItem("pulse_theme");
+    if (saved === "dark") {
+      document.documentElement.classList.add("dark");
+      setIsDark(true);
+    } else {
+      document.documentElement.classList.remove("dark");
+      setIsDark(false);
+    }
   }, []);
 
   const toggleTheme = () => {

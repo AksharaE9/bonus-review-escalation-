@@ -7,11 +7,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { changePasswordAction } from "@/server/actions/auth";
+import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { Lock, Loader2, AlertCircle } from "lucide-react";
 
 export function ChangePasswordClient() {
   const router = useRouter();
+  const { update } = useSession();
   const [isPending, startTransition] = useTransition();
 
   const [currentPassword, setCurrentPassword] = useState("");
@@ -45,6 +47,9 @@ export function ChangePasswordClient() {
         setErrorMessage(res.error);
       } else {
         toast.success("Password updated successfully. Welcome to Pulse!");
+        if (update) {
+          await update({ mustChangePassword: false });
+        }
         router.push("/dashboard");
         router.refresh();
       }

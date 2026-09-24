@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Role, SessionUser } from "@/types";
+import { ROLE_LANDING } from "@/lib/auth-routes";
 import { signOut } from "next-auth/react";
 import { getPendingRegistrationsCountAction } from "@/server/actions/user";
 
@@ -64,12 +65,13 @@ export function Sidebar({ user, previewRole }: SidebarProps) {
   };
 
   const activeRole = previewRole || user.role;
+  const homeHref = ROLE_LANDING[activeRole] || "/dashboard";
 
   const getNavItems = () => {
     switch (activeRole) {
       case "ADMIN":
         return [
-          { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+          { label: "Dashboard", href: homeHref, icon: LayoutDashboard },
           { label: "Employees", href: "/employees", icon: Users },
           { label: "Bonuses", href: "/bonuses", icon: Award },
           { label: "Reviews", href: "/reviews", icon: FileCheck2 },
@@ -80,7 +82,7 @@ export function Sidebar({ user, previewRole }: SidebarProps) {
         ];
       case "LEAD":
         return [
-          { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+          { label: "Dashboard", href: homeHref, icon: LayoutDashboard },
           { label: "My Team", href: "/employees", icon: Users },
           { label: "Bonuses", href: "/bonuses", icon: Award },
           { label: "Reviews", href: "/reviews", icon: FileCheck2 },
@@ -89,7 +91,7 @@ export function Sidebar({ user, previewRole }: SidebarProps) {
       case "USER":
       default:
         return [
-          { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+          { label: "Dashboard", href: homeHref, icon: LayoutDashboard },
           { label: "My Bonuses", href: "/bonuses", icon: Award },
           { label: "My Reviews", href: "/reviews", icon: FileCheck2 },
           { label: "My Escalations", href: "/escalations", icon: AlertOctagon },
@@ -114,7 +116,7 @@ export function Sidebar({ user, previewRole }: SidebarProps) {
     >
       {/* Brand Header */}
       <div className="flex h-14 items-center justify-between border-b border-border px-3.5">
-        <Link href="/dashboard" className="flex items-center gap-2.5 overflow-hidden">
+        <Link href={homeHref} className="flex items-center gap-2.5 overflow-hidden">
           <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[6px] bg-indigo-600 font-bold text-white text-xs">
             P
           </div>
@@ -148,7 +150,8 @@ export function Sidebar({ user, previewRole }: SidebarProps) {
           const Icon = item.icon;
           const isActive =
             pathname === item.href ||
-            (item.href !== "/dashboard" && pathname.startsWith(item.href));
+            (item.href === homeHref && pathname === "/dashboard") ||
+            (item.href !== homeHref && item.href !== "/dashboard" && pathname.startsWith(item.href));
 
           return (
             <Link

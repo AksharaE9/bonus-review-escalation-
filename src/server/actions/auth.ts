@@ -1,34 +1,57 @@
 "use server";
 
 import { headers } from "next/headers";
+import { z } from "zod";
+import { AuthError } from "next-auth";
+import { signIn, signOut, auth } from "@/auth";
 import { db } from "@/db";
 import { users } from "@/db/schema/users";
 import { auditLogs } from "@/db/schema/audit";
-import { eq, and, isNull } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 import { rateLimit, resetRateLimit } from "@/lib/rate-limit";
 import { withAudit } from "@/lib/audit";
-import { auth } from "@/lib/auth";
-import type { SessionUser, Role } from "@/types";
+import { getSafeCallbackUrl } from "@/lib/auth-routes";
+import type { SessionUser } from "@/types";
 
-// Constant dummy hash for constant-time comparison on nonexistent user lookups
-const DUMMY_HASH = "$2a$10$e7Z8P0H8W5LzN1n2v8s4e.uNOPQRSTUVWXYZabcdefghijklmnopqr";
+const signInSchema = z.object({
+  email: z.string().trim().email("Please enter a valid email address."),
+  password: z.string().min(1, "Password is required."),
+  callbackUrl: z.string().optional(),
+});
 
-export async function loginAction(formData: FormData) {
+export interface SignInActionState {
+  error?: string;
+}
+
+export async function signInAction(
+  prevState: SignInActionState | null | undefined,
+  formData: FormData
+): Promise<SignInActionState> {
   const headerList = await headers();
   const ip = headerList.get("x-forwarded-for") || headerList.get("x-real-ip") || "127.0.0.1";
   const userAgent = headerList.get("user-agent") || "PulseApp";
   const requestId = headerList.get("x-request-id") || crypto.randomUUID();
 
-  const email = String(formData.get("email") || "").toLowerCase().trim();
-  const password = String(formData.get("password") || "");
+  const rawEmail = String(formData.get("email") || "");
+  const rawPassword = String(formData.get("password") || "");
+  const rawCallbackUrl = String(formData.get("callbackUrl") || "");
 
-  if (!email || !password) {
-    return { error: "Email and password are required." };
+  const parsed = signInSchema.safeParse({
+    email: rawEmail,
+    password: rawPassword,
+    callbackUrl: rawCallbackUrl,
+  });
+
+  if (!parsed.success) {
+    return { error: "Invalid email or password." };
   }
 
+  const { email, password, callbackUrl } = parsed.data;
+  const normalizedEmail = email.toLowerCase().trim();
+
   // Rate Limiting: 5 attempts per 15 min per IP+email
-  const rlKey = `login_${ip}_${email}`;
+  const rlKey = `login_${ip}_${normalizedEmail}`;
   const rl = rateLimit(rlKey, 5, 15 * 60 * 1000);
 
   if (!rl.success) {
@@ -37,114 +60,55 @@ export async function loginAction(formData: FormData) {
     };
   }
 
+  const safeRedirectTo = getSafeCallbackUrl(callbackUrl || "/dashboard");
+
   try {
-    // 1. Fetch user to verify credentials
-    const [user] = await db
-      .select()
-      .from(users)
-      .where(and(eq(users.email, email), isNull(users.deletedAt)))
-      .limit(1);
-
-    if (!user) {
-      // Execute dummy comparison to equalize execution timing (anti-enumeration)
-      await bcrypt.compare(password, DUMMY_HASH);
-
-      // Audit log failed attempt
-      await db.insert(auditLogs).values({
-        actorId: null,
-        actorEmail: email,
-        actorRole: null,
-        action: "LOGIN_FAILED",
-        entityType: "users",
-        entityId: null,
-        entityLabel: `Failed login attempt for nonexistent ${email}`,
-        ipAddress: ip,
-        userAgent,
-        requestId,
-      });
-
-      return { error: "Invalid email or password." };
-    }
-
-    const isValid = await bcrypt.compare(password, user.passwordHash);
-
-    if (!isValid) {
-      // Audit log failed attempt
-      await db.insert(auditLogs).values({
-        actorId: user.id,
-        actorEmail: user.email,
-        actorRole: user.role as Role,
-        action: "LOGIN_FAILED",
-        entityType: "users",
-        entityId: user.id,
-        entityLabel: `Failed password for ${email}`,
-        ipAddress: ip,
-        userAgent,
-        requestId,
-      });
-
-      return { error: "Invalid email or password." };
-    }
-
-    if (user.status === "INACTIVE") {
-      return {
-        error: "Your account registration is pending administrator approval. You will receive access once approved.",
-      };
-    }
-
-    if (user.status === "SUSPENDED") {
-      return {
-        error: "Your account has been suspended. Please contact human resources or your administrator.",
-      };
-    }
-
-    if (!isValid) {
-      // Audit log failed attempt
-      await db.insert(auditLogs).values({
-        actorId: user.id,
-        actorEmail: user.email,
-        actorRole: user.role as Role,
-        action: "LOGIN_FAILED",
-        entityType: "users",
-        entityId: user.id,
-        entityLabel: `Failed password for ${email}`,
-        ipAddress: ip,
-        userAgent,
-        requestId,
-      });
-
-      return { error: "Invalid email or password." };
-    }
-
-    // Clear failed attempts counter on successful verification
-    resetRateLimit(rlKey);
-
-    // Record login timestamp and audit success
-    await db
-      .update(users)
-      .set({ lastLoginAt: new Date() })
-      .where(eq(users.id, user.id));
-
-    await db.insert(auditLogs).values({
-      actorId: user.id,
-      actorEmail: user.email,
-      actorRole: user.role as Role,
-      action: "LOGIN",
-      entityType: "users",
-      entityId: user.id,
-      entityLabel: `Successful login by ${user.fullName}`,
-      ipAddress: ip,
-      userAgent,
-      requestId,
+    await signIn("credentials", {
+      email: normalizedEmail,
+      password,
+      redirectTo: safeRedirectTo,
     });
 
-    return {
-      success: true,
-      mustChangePassword: user.mustChangePassword,
-    };
-  } catch (err: unknown) {
-    return { error: (err as Error).message || "Authentication error." };
+    // Reset rate limit on success
+    resetRateLimit(rlKey);
+
+    return {};
+  } catch (error) {
+    if (error instanceof AuthError) {
+      // Audit log failed login
+      try {
+        await db.insert(auditLogs).values({
+          actorId: null,
+          actorEmail: normalizedEmail,
+          actorRole: null,
+          action: "LOGIN_FAILED",
+          entityType: "users",
+          entityId: null,
+          entityLabel: `Failed login attempt for ${normalizedEmail}`,
+          ipAddress: ip,
+          userAgent,
+          requestId,
+        });
+      } catch (auditErr) {
+        console.error("Failed to write audit log:", auditErr);
+      }
+
+      switch (error.type) {
+        case "CredentialsSignin":
+          return { error: "Invalid email or password." };
+        default:
+          return { error: "Unable to sign in. Please try again." };
+      }
+    }
+
+    // MANDATORY: Re-throw NEXT_REDIRECT to allow Next.js server-driven navigation to propagate.
+    // If caught and converted to a return value, navigation silently fails.
+    throw error;
   }
+}
+
+export async function signOutAction() {
+  await signOut({ redirectTo: "/sign-in" });
 }
 
 export async function changePasswordAction(formData: FormData) {
@@ -198,6 +162,7 @@ export async function changePasswordAction(formData: FormData) {
         .set({
           passwordHash: newHash,
           mustChangePassword: false,
+          sessionVersion: sql`${users.sessionVersion} + 1`,
           updatedAt: new Date(),
         })
         .where(eq(users.id, user.id))
