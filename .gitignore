@@ -12,9 +12,9 @@
 /build
 dist
 
-# Environment files
+# Environment files — never commit real secrets
 .env
-.env*.local
+.env.*
 !.env.example
 
 # Test results & coverage
