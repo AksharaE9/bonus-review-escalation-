@@ -81,7 +81,7 @@ export default async function ScorecardPage({
         </div>
         <div>
           <div className="text-xs text-gray-500 uppercase font-semibold">Latest Rating</div>
-          <div className="text-lg font-bold">{stats.latestReviewRating ? `${stats.latestReviewRating} / 5.0` : "—"}</div>
+          <div className="text-lg font-bold">{stats.latestReviewRating ? `${stats.latestReviewRating} / 5.0` : "No reviews yet"}</div>
         </div>
         <div>
           <div className="text-xs text-gray-500 uppercase font-semibold">Open Escalations</div>

@@ -82,7 +82,7 @@ export function BonusModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg">
+      <DialogContent className="max-w-xl">
         <DialogHeader>
           <DialogTitle>Award / Nominate Employee Bonus</DialogTitle>
           <DialogDescription>
@@ -90,15 +90,17 @@ export function BonusModal({
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          {/* Employee Selection */}
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 pt-1">
+          {/* Recipient Employee */}
           <div className="space-y-1.5">
-            <Label htmlFor="employeeId">Recipient Employee</Label>
+            <Label htmlFor="employeeId" className="text-xs font-medium text-foreground">
+              Recipient Employee
+            </Label>
             <select
               id="employeeId"
               {...register("employeeId")}
               disabled={Boolean(preselectedEmployeeId)}
-              className="flex h-9 w-full rounded-[4px] border border-input bg-background px-3 py-1 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:opacity-75"
+              className="flex h-9 w-full rounded-[4px] border border-input bg-card px-3 py-1.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:opacity-60"
             >
               <option value="">Select an employee...</option>
               {employees.map((e) => (
@@ -108,38 +110,42 @@ export function BonusModal({
               ))}
             </select>
             {errors.employeeId && (
-              <p className="text-[11px] text-rose-600">{errors.employeeId.message}</p>
+              <p className="text-[11px] text-destructive">{errors.employeeId.message}</p>
             )}
           </div>
 
           {/* Amount and Type Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             {/* Amount */}
             <div className="space-y-1.5">
-              <Label htmlFor="amount">Amount (INR ₹)</Label>
-              <div className="relative">
-                <span className="absolute left-3 top-2 text-xs font-semibold text-muted-foreground">
+              <Label htmlFor="amount" className="text-xs font-medium text-foreground">
+                Amount (INR ₹)
+              </Label>
+              <div className="relative flex items-center">
+                <span className="pointer-events-none absolute left-3 text-xs font-medium text-muted-foreground">
                   ₹
                 </span>
                 <Input
                   id="amount"
-                  placeholder="e.g. 25000"
+                  placeholder="25,000"
                   {...register("amount")}
-                  className="pl-7 font-mono text-xs tabular-nums"
+                  className="pl-8 font-mono text-xs tabular-nums h-9 bg-card"
                 />
               </div>
               {errors.amount && (
-                <p className="text-[11px] text-rose-600">{errors.amount.message}</p>
+                <p className="text-[11px] text-destructive">{errors.amount.message}</p>
               )}
             </div>
 
             {/* Bonus Type */}
             <div className="space-y-1.5">
-              <Label htmlFor="bonusType">Bonus Type</Label>
+              <Label htmlFor="bonusType" className="text-xs font-medium text-foreground">
+                Bonus Type
+              </Label>
               <select
                 id="bonusType"
                 {...register("bonusType")}
-                className="flex h-9 w-full rounded-[4px] border border-input bg-background px-3 py-1 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+                className="flex h-9 w-full rounded-[4px] border border-input bg-card px-3 py-1.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
               >
                 <option value="PERFORMANCE">PERFORMANCE</option>
                 <option value="SPOT">SPOT</option>
@@ -151,26 +157,30 @@ export function BonusModal({
                 <option value="OTHER">OTHER</option>
               </select>
               {errors.bonusType && (
-                <p className="text-[11px] text-rose-600">{errors.bonusType.message}</p>
+                <p className="text-[11px] text-destructive">{errors.bonusType.message}</p>
               )}
             </div>
           </div>
 
           {/* Period Month */}
           <div className="space-y-1.5">
-            <Label htmlFor="periodMonth">Allocation Period (Month)</Label>
+            <Label htmlFor="periodMonth" className="text-xs font-medium text-foreground">
+              Allocation Period (Month)
+            </Label>
             <Input
               id="periodMonth"
               type="date"
               {...register("periodMonth")}
-              className="text-xs"
+              className="text-xs h-9 bg-card"
             />
           </div>
 
           {/* Reason Justification */}
           <div className="space-y-1.5">
             <div className="flex items-center justify-between">
-              <Label htmlFor="reason">Reason / Justification (Min 10 characters)</Label>
+              <Label htmlFor="reason" className="text-xs font-medium text-foreground">
+                Reason / Justification (Min 10 characters)
+              </Label>
               <span className="text-[10px] text-muted-foreground tabular-nums">
                 {reasonValue.length} chars (min 10)
               </span>
@@ -180,17 +190,17 @@ export function BonusModal({
               rows={3}
               placeholder="Explain specifically what this bonus is for — this is visible to the employee on their profile."
               {...register("reason")}
-              className="text-xs"
+              className="text-xs bg-card resize-none"
             />
             {errors.reason && (
-              <p className="text-[11px] text-rose-600">{errors.reason.message}</p>
+              <p className="text-[11px] text-destructive">{errors.reason.message}</p>
             )}
             <p className="text-[11px] text-muted-foreground">
               Explain specifically what project, contribution, or milestone this bonus rewards.
             </p>
           </div>
 
-          <DialogFooter className="pt-2">
+          <DialogFooter className="pt-3 border-t border-border mt-5">
             <Button
               type="button"
               variant="outline"
@@ -204,7 +214,7 @@ export function BonusModal({
               type="submit"
               size="sm"
               disabled={isSubmitting}
-              className="gap-1.5 bg-indigo-600 hover:bg-indigo-700"
+              className="gap-1.5"
             >
               {isSubmitting && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
               <span>Submit Bonus</span>

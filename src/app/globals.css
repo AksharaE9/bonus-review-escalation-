@@ -2,6 +2,42 @@
 
 @variant dark (&:where(.dark, .dark *));
 
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+@utility z-base { z-index: 0; }
+@utility z-sticky { z-index: 10; }
+@utility z-header { z-index: 20; }
+@utility z-sidebar { z-index: 30; }
+@utility z-overlay { z-index: 40; }
+@utility z-dialog { z-index: 50; }
+@utility z-popover { z-index: 60; }
+@utility z-toast { z-index: 70; }
+
 @layer base {
   :root {
     --background: #f8fafc;
@@ -25,6 +61,28 @@
     --ring: #4f46e5;
     --radius: 0.5rem;
   }
+
+  .dark {
+    --background: #09090b;
+    --foreground: #f4f4f5;
+    --card: #18181b;
+    --card-foreground: #f4f4f5;
+    --popover: #18181b;
+    --popover-foreground: #f4f4f5;
+    --primary: #6366f1;
+    --primary-foreground: #ffffff;
+    --secondary: #27272a;
+    --secondary-foreground: #f4f4f5;
+    --muted: #27272a;
+    --muted-foreground: #a1a1aa;
+    --accent: #27272a;
+    --accent-foreground: #f4f4f5;
+    --destructive: #f43f5e;
+    --destructive-foreground: #ffffff;
+    --border: #27272a;
+    --input: #27272a;
+    --ring: #6366f1;
+  }
 }
 
 @layer base {
@@ -47,6 +105,13 @@
   .font-mono-num {
     font-variant-numeric: tabular-nums;
   }
+}
+
+/* Modal & Popover Surface Opacity Guarantees */
+[data-radix-dialog-content],
+.dialog-content-surface {
+  background-color: var(--popover);
+  opacity: 1;
 }
 
 /* Transitions */

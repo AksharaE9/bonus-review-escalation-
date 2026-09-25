@@ -122,7 +122,7 @@ export function UserDashboard({ user, data }: UserDashboardProps) {
           value={
             data.stats.latestRating
               ? `${data.stats.latestRating.toFixed(1)} / 5.0`
-              : "—"
+              : "No reviews yet"
           }
           icon={Star}
         />

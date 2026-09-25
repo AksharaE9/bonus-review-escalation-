@@ -110,7 +110,7 @@ export function Sidebar({ user, previewRole }: SidebarProps) {
   return (
     <aside
       className={cn(
-        "relative flex flex-col border-r border-border bg-card transition-all duration-200 ease-out select-none",
+        "relative z-sidebar flex flex-col border-r border-border bg-card transition-all duration-200 ease-out select-none",
         collapsed ? "w-16" : "w-60"
       )}
     >

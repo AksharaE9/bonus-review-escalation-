@@ -26,17 +26,31 @@ import {
   Check,
   Shield,
 } from "lucide-react";
-import {
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  LineChart,
-  Line,
-  CartesianGrid,
-} from "recharts";
+import dynamic from "next/dynamic";
+
+const BonusSpendChart = dynamic(
+  () => import("@/components/app/AdminCharts").then((mod) => mod.BonusSpendChart),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-full flex items-center justify-center text-xs text-muted-foreground animate-pulse">
+        Loading chart data...
+      </div>
+    ),
+  }
+);
+
+const EscalationVelocityChart = dynamic(
+  () => import("@/components/app/AdminCharts").then((mod) => mod.EscalationVelocityChart),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-full flex items-center justify-center text-xs text-muted-foreground animate-pulse">
+        Loading velocity metrics...
+      </div>
+    ),
+  }
+);
 
 interface AdminDashboardProps {
   user?: SessionUser;
@@ -137,43 +151,7 @@ export function AdminDashboard({ data }: AdminDashboardProps) {
           </CardHeader>
           <CardContent className="pt-4">
             <div className="h-[240px] w-full">
-              {data.bonusSpendTrend.length === 0 ? (
-                <div className="h-full flex items-center justify-center text-xs text-slate-400">
-                  No bonus spend recorded in this period.
-                </div>
-              ) : (
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={data.bonusSpendTrend} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                    <XAxis
-                      dataKey="month"
-                      fontSize={11}
-                      tickLine={false}
-                      axisLine={{ stroke: "#e2e8f0" }}
-                      stroke="#64748b"
-                    />
-                    <YAxis
-                      fontSize={11}
-                      tickLine={false}
-                      axisLine={{ stroke: "#e2e8f0" }}
-                      stroke="#64748b"
-                      tickFormatter={(v) => `₹${v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v}`}
-                    />
-                    <Tooltip
-                      formatter={(val: unknown) => [val != null ? formatINR(Number(val) || 0) : "₹0", "Bonus Spend"]}
-                      contentStyle={{
-                        backgroundColor: "#ffffff",
-                        borderColor: "#e2e8f0",
-                        color: "#0f172a",
-                        fontSize: "12px",
-                        borderRadius: "8px",
-                        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.08)",
-                      }}
-                    />
-                    <Bar dataKey="spend" fill="#4f46e5" radius={[4, 4, 0, 0]} maxBarSize={32} />
-                  </BarChart>
-                </ResponsiveContainer>
-              )}
+              <BonusSpendChart data={data.bonusSpendTrend} />
             </div>
           </CardContent>
         </Card>
@@ -195,43 +173,7 @@ export function AdminDashboard({ data }: AdminDashboardProps) {
           </CardHeader>
           <CardContent className="pt-4">
             <div className="h-[240px] w-full">
-              {data.escalationTrend.length === 0 ? (
-                <div className="h-full flex items-center justify-center text-xs text-slate-400">
-                  No escalation history available.
-                </div>
-              ) : (
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={data.escalationTrend} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                    <XAxis
-                      dataKey="period"
-                      fontSize={11}
-                      tickLine={false}
-                      axisLine={{ stroke: "#e2e8f0" }}
-                      stroke="#64748b"
-                    />
-                    <YAxis
-                      fontSize={11}
-                      tickLine={false}
-                      axisLine={{ stroke: "#e2e8f0" }}
-                      stroke="#64748b"
-                      allowDecimals={false}
-                    />
-                    <Tooltip
-                      contentStyle={{
-                        backgroundColor: "#ffffff",
-                        borderColor: "#e2e8f0",
-                        color: "#0f172a",
-                        fontSize: "12px",
-                        borderRadius: "8px",
-                        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.08)",
-                      }}
-                    />
-                    <Line type="monotone" dataKey="opened" stroke="#f43f5e" strokeWidth={2} dot={{ r: 3 }} name="Opened" />
-                    <Line type="monotone" dataKey="resolved" stroke="#10b981" strokeWidth={2} dot={{ r: 3 }} name="Resolved" />
-                  </LineChart>
-                </ResponsiveContainer>
-              )}
+              <EscalationVelocityChart data={data.escalationTrend} />
             </div>
           </CardContent>
         </Card>

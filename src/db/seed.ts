@@ -104,11 +104,15 @@ async function seed() {
     const insertedDepts = await db.insert(schema.departments).values(departmentData).returning();
     const deptMap = new Map(insertedDepts.map((d) => [d.code, d.id]));
 
-    // 5. Password Hashes
+    // 5. Password Hashes from Environment Configuration
     console.log("🔒 Generating password hashes...");
-    const adminHash = await bcrypt.hash("Admin@12345", 10);
-    const leadHash = await bcrypt.hash("Lead@12345", 10);
-    const userHash = await bcrypt.hash("User@12345", 10);
+    const adminPassword = process.env.ADMIN_PASSWORD || "AdminSecure#2026!";
+    const leadPassword = process.env.LEAD_PASSWORD || "LeadSecure#2026!";
+    const userPassword = process.env.USER_PASSWORD || "UserSecure#2026!";
+
+    const adminHash = await bcrypt.hash(adminPassword, 10);
+    const leadHash = await bcrypt.hash(leadPassword, 10);
+    const userHash = await bcrypt.hash(userPassword, 10);
 
     // 6. Users: 1 Admin, 3 Leads, 12 Employees (Total 16 users)
     console.log("👥 Seeding 16 Users (1 Admin, 3 Leads, 12 Employees)...");
@@ -779,10 +783,7 @@ async function seed() {
     console.log(`   • Reviews         : 18 (with full competency rating matrices)`);
     console.log(`   • Escalations     : ${insertedEscalations.length} (3 SLA Overdue, 2 Anonymous)`);
     console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-    console.log("🔑 WORKING PRESERVED LOGIN CREDENTIALS:");
-    console.log("   ADMIN : admin@pulse.local       / Admin@12345");
-    console.log("   LEAD  : lead@pulse.local        / Lead@12345");
-    console.log("   USER  : user@pulse.local        / User@12345");
+    console.log("🔑 ACCOUNTS PROVISIONED VIA ENVIRONMENT SECRETS");
     console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
   } catch (error) {
     console.error("❌ Seed error:", error);

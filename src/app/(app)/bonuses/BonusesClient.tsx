@@ -260,7 +260,7 @@ export function BonusesClient({
               <Button
                 size="sm"
                 onClick={() => setCreateModalOpen(true)}
-                className="gap-1.5 h-8 text-xs bg-indigo-600 hover:bg-indigo-700"
+                className="gap-1.5 h-8 text-xs"
               >
                 <Plus className="h-3.5 w-3.5" />
                 <span>Award Bonus</span>
@@ -286,7 +286,7 @@ export function BonusesClient({
               <span className="text-xs text-muted-foreground uppercase tracking-wider font-medium">
                 Pending Approvals
               </span>
-              <div className="text-xl font-bold text-amber-600 dark:text-amber-400 tabular-nums font-mono-num">
+              <div className="text-xl font-bold text-foreground tabular-nums font-mono-num">
                 {formatINR(summary.totalPendingAmount)}
               </div>
             </div>

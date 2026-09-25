@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, afterAll } from "vitest";
 
 vi.mock("@/lib/auth", () => ({
   auth: vi.fn().mockResolvedValue({
@@ -57,5 +57,9 @@ describe("Registration & Admin Approval Workflow", () => {
 
     expect(shortPassRes.success).toBeUndefined();
     expect(shortPassRes.error).toContain("at least 8 characters");
+  });
+
+  afterAll(async () => {
+    await db.delete(users).where(eq(users.email, testEmail));
   });
 });

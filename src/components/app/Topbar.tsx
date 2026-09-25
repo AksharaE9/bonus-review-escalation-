@@ -80,7 +80,7 @@ export function Topbar({
   };
 
   return (
-    <header className="flex h-14 w-full items-center justify-between border-b border-border bg-card/60 px-6 backdrop-blur-sm">
+    <header className="z-header flex h-14 w-full items-center justify-between border-b border-border bg-card/80 px-6 backdrop-blur-sm">
       {/* Left Breadcrumbs */}
       <div className="flex items-center gap-2">
         <span className="text-xs font-medium text-muted-foreground capitalize">

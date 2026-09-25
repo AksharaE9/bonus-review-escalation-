@@ -164,7 +164,7 @@ export function ProfileClient({
         />
         <StatTile
           label="Latest Rating"
-          value={stats.latestReviewRating ? `${stats.latestReviewRating} / 5.0` : "—"}
+          value={stats.latestReviewRating ? `${stats.latestReviewRating} / 5.0` : "No reviews yet"}
           subtext="From most recent cycle"
           icon={Star}
         />

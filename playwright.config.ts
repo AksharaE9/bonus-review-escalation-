@@ -1,4 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
+import path from "node:path";
+
+const authDir = path.join(process.cwd(), "playwright", ".auth");
 
 export default defineConfig({
   testDir: "./tests",
@@ -11,14 +14,45 @@ export default defineConfig({
     trace: "on-first-retry",
   },
   webServer: {
-    command: "npm run dev",
+    command: "npm run start",
     url: "http://localhost:3000",
     reuseExistingServer: true,
     timeout: 60000,
   },
   projects: [
     {
-      name: "chromium",
+      name: "setup",
+      testMatch: /auth\.setup\.ts/,
+    },
+    {
+      name: "admin",
+      dependencies: ["setup"],
+      use: {
+        ...devices["Desktop Chrome"],
+        channel: "msedge",
+        storageState: path.join(authDir, "admin.json"),
+      },
+    },
+    {
+      name: "lead",
+      dependencies: ["setup"],
+      use: {
+        ...devices["Desktop Chrome"],
+        channel: "msedge",
+        storageState: path.join(authDir, "lead.json"),
+      },
+    },
+    {
+      name: "user",
+      dependencies: ["setup"],
+      use: {
+        ...devices["Desktop Chrome"],
+        channel: "msedge",
+        storageState: path.join(authDir, "user.json"),
+      },
+    },
+    {
+      name: "unauthenticated",
       use: {
         ...devices["Desktop Chrome"],
         channel: "msedge",
@@ -26,4 +60,3 @@ export default defineConfig({
     },
   ],
 });
-
